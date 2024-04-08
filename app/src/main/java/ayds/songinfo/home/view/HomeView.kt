@@ -18,6 +18,7 @@ import ayds.songinfo.home.model.entities.Song
 import ayds.songinfo.home.model.entities.Song.EmptySong
 import ayds.songinfo.home.model.entities.Song.SpotifySong
 import ayds.songinfo.home.view.HomeUiState.Companion.DEFAULT_IMAGE
+import ayds.songinfo.home.view.songDescription.SongDescriptionHelper
 import ayds.songinfo.utils.UtilsInjector
 import ayds.songinfo.utils.navigation.NavigationUtils
 import ayds.songinfo.utils.view.ImageLoader

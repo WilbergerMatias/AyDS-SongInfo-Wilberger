@@ -59,7 +59,7 @@ class OtherInfoWindow : Activity() {
     private fun fetchArtistInfoFromAPI(artistName: String): String {
         return try {
             val callResponse = apiService.getArtistInfo(artistName).execute()
-             if (callResponse.isSuccessful) {
+            if (callResponse.isSuccessful) {
                 parseArtistInfo(callResponse.body(), artistName)
             } else {
                 "No Results"
@@ -71,7 +71,7 @@ class OtherInfoWindow : Activity() {
         }
     }
 
-    private fun parseArtistInfo(responseBody: String?, artistName:String): String {
+    private fun parseArtistInfo(responseBody: String?, artistName: String): String {
         val gson = Gson()
         val jobj = gson.fromJson(responseBody, JsonObject::class.java)
         val artist = jobj.getAsJsonObject("artist")
@@ -92,12 +92,15 @@ class OtherInfoWindow : Activity() {
     private fun displayArtistInfo(text: String) {
         runOnUiThread {
             // Load image
-            val imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
+            val imageUrl =
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
             Picasso.get().load(imageUrl).into(findViewById<ImageView>(R.id.imageView1))
 
             // Display text
-            textPane1.text = Html.fromHtml(text,
-                Html.FROM_HTML_MODE_COMPACT or Html.FROM_HTML_OPTION_USE_CSS_COLORS)
+            textPane1.text = Html.fromHtml(
+                text,
+                Html.FROM_HTML_MODE_COMPACT
+            )
         }
     }
 

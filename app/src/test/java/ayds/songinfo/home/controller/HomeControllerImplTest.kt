@@ -18,6 +18,7 @@ class HomeControllerTest {
     private val homeModel: HomeModel = mockk(relaxUnitFun = true)
 
     private val onActionSubject = Subject<HomeUiEvent>()
+
     private val homeView: HomeView = mockk(relaxUnitFun = true) {
         every { uiEventObservable } returns onActionSubject
     }

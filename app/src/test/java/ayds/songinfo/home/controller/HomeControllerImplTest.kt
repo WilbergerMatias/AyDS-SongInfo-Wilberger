@@ -1,7 +1,5 @@
 package ayds.songinfo.home.controller
 
-import org.junit.jupiter.api.Assertions.*
-
 import ayds.observer.Subject
 import ayds.songinfo.home.model.HomeModel
 import ayds.songinfo.home.model.entities.Song.SpotifySong

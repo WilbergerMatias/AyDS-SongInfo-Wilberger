@@ -1,7 +1,5 @@
 package ayds.songinfo.home.controller
 
-import org.junit.jupiter.api.Assertions.*
-
 import ayds.observer.Subject
 import ayds.songinfo.home.model.HomeModel
 import ayds.songinfo.home.model.entities.Song.SpotifySong
@@ -20,6 +18,7 @@ class HomeControllerTest {
     private val homeModel: HomeModel = mockk(relaxUnitFun = true)
 
     private val onActionSubject = Subject<HomeUiEvent>()
+
     private val homeView: HomeView = mockk(relaxUnitFun = true) {
         every { uiEventObservable } returns onActionSubject
     }

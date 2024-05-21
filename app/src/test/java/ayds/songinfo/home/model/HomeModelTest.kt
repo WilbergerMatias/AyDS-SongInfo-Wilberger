@@ -1,60 +1,40 @@
-package ayds.songinfo.home.controller
+package ayds.songinfo.home.model
 
-import ayds.observer.Subject
-import ayds.songinfo.home.model.HomeModel
-import ayds.songinfo.home.model.entities.Song.SpotifySong
-import ayds.songinfo.home.view.HomeUiEvent
-import ayds.songinfo.home.view.HomeUiState
-import ayds.songinfo.home.view.HomeView
+import ayds.songinfo.home.model.entities.Song
+import ayds.songinfo.home.model.repository.SongRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Before
+import org.junit.Assert
 import org.junit.Test
 
+class HomeModelTest {
 
-class HomeControllerTest {
+    private val repository: SongRepository = mockk()
 
-    private val homeModel: HomeModel = mockk(relaxUnitFun = true)
+    private val homeModel: HomeModel = HomeModelImpl(repository)
 
-    private val onActionSubject = Subject<HomeUiEvent>()
-    private val homeView: HomeView = mockk(relaxUnitFun = true) {
-        every { uiEventObservable } returns onActionSubject
-    }
+    @Test
+    fun `getSongById should return song`() {
+        val song: Song = mockk()
+        every { repository.getSongById("id") } returns song
 
-    private val homeController = HomeControllerImpl(homeModel)
+        val result = homeModel.getSongById("id")
 
-    @Before
-    fun setup() {
-        homeController.setHomeView(homeView)
+        Assert.assertEquals(song, result)
     }
 
     @Test
-    fun `on search event should search song`() {
-        every { homeView.uiState } returns HomeUiState(searchTerm = "song")
+    fun `on search song it should notify the result`() {
+        val song: Song = mockk()
+        every { repository.getSongByTerm("term") } returns song
+        val songTester: (Song) -> Unit = mockk(relaxed = true)
+        homeModel.songObservable.subscribe {
+            songTester(it)
+        }
 
-        onActionSubject.notify(HomeUiEvent.Search)
+        homeModel.searchSong("term")
 
-        verify { homeModel.searchSong("song") }
-    }
-
-    @Test
-    fun `on more details event should navigate to more details`() {
-        every { homeView.uiState } returns HomeUiState(songId = "id")
-        val song: SpotifySong = mockk { every { artistName } returns "artist" }
-        every { homeModel.getSongById("id") } returns song
-
-        onActionSubject.notify(HomeUiEvent.MoreDetails)
-
-        verify { homeView.navigateToOtherDetails("artist") }
-    }
-
-    @Test
-    fun `on open song url event should open external link`() {
-        every { homeView.uiState } returns HomeUiState(songUrl = "url")
-
-        onActionSubject.notify(HomeUiEvent.OpenSongUrl)
-
-        verify { homeView.openExternalLink("url") }
+        verify { songTester(song) }
     }
 }

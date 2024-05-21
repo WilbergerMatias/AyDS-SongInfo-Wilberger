@@ -28,12 +28,12 @@ internal class ReleaseDateHelperFactoryImpl: ReleaseDateHelperFactory{
         }
     }
 
-    internal class SongDateHelperDefaultImpl(override val song: SpotifySong): SongDateHelper {
-        override fun getSongReleaseDateText(): String {
-            return song.releaseDate
-        }
-
+internal class SongDateHelperDefaultImpl(override val song: SpotifySong): SongDateHelper {
+    override fun getSongReleaseDateText(): String {
+        return song.releaseDate
     }
+
+}
     //sealed class  SongDate{}
 
 internal class SongDateHelperDayImpl(override val song: SpotifySong) :SongDateHelper {

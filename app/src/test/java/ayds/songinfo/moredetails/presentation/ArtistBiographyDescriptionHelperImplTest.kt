@@ -16,16 +16,10 @@ class ArtistBiographyDescriptionHelperImplTest{
     private val LOCALLYSTORED = "[*]"
 
     private val artistBiographyDescriptionHelper = ArtistBiographyDescriptionHelperImpl()
-    private val artistBiography:ArtistBiography = mockk(relaxUnitFun = true)
 
     @Test
     fun `Given an artist that is locally stored result should contain special character`(){
-        every {
-            artistBiography.isLocallyStored
-        } returns true
-        every {
-            artistBiography.biography
-        } returns "Biography"
+        val artistBiography = ArtistBiography("artistName", "biography", "url", true)
         val builder = StringBuilder()
         builder.append(LOCALLYSTORED)
         builder.append(HEADER)
@@ -39,12 +33,7 @@ class ArtistBiographyDescriptionHelperImplTest{
 
     @Test
     fun `Given an artist that is not locally stored result should not contain special character`(){
-        every {
-            artistBiography.isLocallyStored
-        } returns false
-        every {
-            artistBiography.biography
-        } returns "Biography"
+        val artistBiography = ArtistBiography("artistName", "biography", "url", false)
         val builder = StringBuilder()
         builder.append(HEADER)
         builder.append(artistBiography.biography)
@@ -53,5 +42,52 @@ class ArtistBiographyDescriptionHelperImplTest{
 
         val actualResult = artistBiographyDescriptionHelper.getDescription(artistBiography)
         Assert.assertEquals(expectedResult, actualResult)
+    }
+
+    @Test
+    fun `should remove apostrophes`() {
+        val artistBiography = ArtistBiography("artist", "biography'n", "url", false)
+
+        val result = artistBiographyDescriptionHelper.getDescription(artistBiography)
+
+        Assert.assertEquals(
+            "<html><div width=400><font face=\"arial\">biography n</font></div></html>",
+            result
+        )
+    }
+
+    @Test
+    fun `should fix on double slash`() {
+        val artistBiography = ArtistBiography("artist", "biography\\n", "url", false)
+
+        val result = artistBiographyDescriptionHelper.getDescription(artistBiography)
+
+        Assert.assertEquals(
+            "<html><div width=400><font face=\"arial\">biography<br></font></div></html>",
+            result
+        )
+    }
+
+    @Test
+    fun `should map break lines`() {
+        val artistBiography = ArtistBiography("artist", "biography\n", "url", false)
+
+        val result = artistBiographyDescriptionHelper.getDescription(artistBiography)
+
+        Assert.assertEquals(
+            "<html><div width=400><font face=\"arial\">biography<br></font></div></html>",
+            result
+        )
+    }
+    @Test
+    fun `should set artist name bold`() {
+        val artistBiography = ArtistBiography("artist", "biography artist", "url", false)
+
+        val result = artistBiographyDescriptionHelper.getDescription(artistBiography)
+
+        Assert.assertEquals(
+            "<html><div width=400><font face=\"arial\">biography <b>ARTIST</b></font></div></html>",
+            result
+        )
     }
 }

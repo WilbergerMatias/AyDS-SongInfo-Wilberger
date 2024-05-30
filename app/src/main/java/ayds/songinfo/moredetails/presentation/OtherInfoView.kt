@@ -10,13 +10,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import ayds.songinfo.R
 import ayds.songinfo.moredetails.Injector.OtherInfoInjector
-import ayds.songinfo.moredetails.Injector.OtherInfoInjector.presenter
 import com.squareup.picasso.Picasso
 
 class OtherInfoView : Activity() {
-    private lateinit var articleTextView: TextView
+    private lateinit var cardContentTextView: TextView
     private lateinit var openUrlButton: Button
-    private lateinit var lastFMImageView: ImageView
+    private lateinit var sourceImageView: ImageView
+
+    private lateinit var presenter: OtherInfoPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +25,7 @@ class OtherInfoView : Activity() {
         initViewProperties()
         initPresenter()
         observePresenter()
-        getArtistInfoAsync()
+        getArtistCardAsync()
     }
 
     private fun initPresenter() {
@@ -33,33 +34,33 @@ class OtherInfoView : Activity() {
     }
 
     private fun observePresenter() {
-        presenter.artistBiographyObservable.subscribe { artistBiography ->
+        presenter.cardObservable.subscribe { artistBiography ->
             updateUi(artistBiography)
         }
     }
 
     private fun initViewProperties() {
-        articleTextView = findViewById(R.id.textPane1)
+        cardContentTextView = findViewById(R.id.textPane1)
         openUrlButton = findViewById(R.id.openUrlButton)
-        lastFMImageView = findViewById(R.id.lastFMImageView)
+        sourceImageView = findViewById(R.id.lastFMImageView)
     }
 
-    private fun getArtistInfoAsync() {
+    private fun getArtistCardAsync() {
         Thread {
-            getArtistInfo()
+            getArtistCard()
         }.start()
     }
 
-    private fun getArtistInfo() {
+    private fun getArtistCard() {
         val artistName = getArtistName()
-        presenter.getArtistInfo(artistName)
+        presenter.updateCard(artistName)
     }
 
-    private fun updateUi(uiState: ArtistBiographyUiState) {
+    private fun updateUi(uiState: CardUiState) {
         runOnUiThread {
-            updateOpenUrlButton(uiState.articleURL)
+            updateOpenUrlButton(uiState.URL)
             updateLastFMLogo(uiState.imageUrl)
-            updateArticleText(uiState.infoHTML)
+            updateCardText(uiState.contentHTML)
         }
     }
 
@@ -68,7 +69,6 @@ class OtherInfoView : Activity() {
             navigateToUrl(url)
         }
     }
-
     private fun navigateToUrl(url: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setData(Uri.parse(url))
@@ -76,14 +76,14 @@ class OtherInfoView : Activity() {
     }
 
     private fun updateLastFMLogo(url: String) {
-        Picasso.get().load(url).into(lastFMImageView)
+        Picasso.get().load(url).into(sourceImageView)
     }
 
     private fun getArtistName() =
         intent.getStringExtra(ARTIST_NAME_EXTRA) ?: throw Exception("Missing artist name")
 
-    private fun updateArticleText(infoHtml: String) {
-        articleTextView.text = Html.fromHtml(infoHtml)
+    private fun updateCardText(infoHtml: String) {
+        cardContentTextView.text = Html.fromHtml(infoHtml)
     }
 
     companion object {

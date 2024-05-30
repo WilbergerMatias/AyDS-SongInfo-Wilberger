@@ -4,5 +4,5 @@ import android.content.Context
 
 interface OtherInfoRepository {
 
-    fun getArtistInfo(artistName:String): ArtistBiography
+    fun getCard(artistName:String): Card
 }

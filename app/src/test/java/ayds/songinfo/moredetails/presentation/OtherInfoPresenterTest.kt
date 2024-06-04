@@ -1,30 +1,30 @@
 package ayds.songinfo.moredetails.presentation
 
-import ayds.songinfo.moredetails.domain.ArtistBiography
+import ayds.songinfo.moredetails.domain.Card
+import ayds.songinfo.moredetails.domain.CardSource
 import ayds.songinfo.moredetails.domain.OtherInfoRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
-
 class OtherInfoPresenterTest {
 
-    private val repository: OtherInfoRepository = mockk()
-    private val artistBiographyDescriptionHelper: ArtistBiographyDescriptionHelper = mockk()
-    private val presenter: OtherInfoPresenter =
-        OtherInfoPresenterImpl(repository, artistBiographyDescriptionHelper)
+    private val otherInfoRepository: OtherInfoRepository = mockk()
+    private val cardDescriptionHelper: CardDescriptionHelper = mockk()
+    private val otherInfoPresenter: OtherInfoPresenter =
+        OtherInfoPresenterImpl(otherInfoRepository, cardDescriptionHelper)
 
     @Test
     fun `getArtistInfo should return artist biography ui state`() {
-        val artistBiography = ArtistBiography("artistName", "biography", "articleUrl")
-        every { repository.getArtistInfo("artistName") } returns artistBiography
-        every { artistBiographyDescriptionHelper.getDescription(artistBiography) } returns "description"
+        val card = Card("artistName", "biography", "url","logoUrl", CardSource.WIKIPEDIA, false)
+        every { otherInfoRepository.getCard("artistName") } returns listOf(card)
+        every { cardDescriptionHelper.getDescription(card) } returns "description"
         val artistBiographyTester: (CardUiState) -> Unit = mockk(relaxed = true)
 
-        presenter.artistBiographyObservable.subscribe(artistBiographyTester)
-        presenter.getArtistInfo("artistName")
+        otherInfoPresenter.cardObservable.subscribe(artistBiographyTester)
+        otherInfoPresenter.updateCard("artistName")
 
-        val result = CardUiState("artistName", "description", "articleUrl")
+        val result = CardUiState("artistName", "contentHTML", "url", "imageURL")
         verify { artistBiographyTester(result) }
     }
 }

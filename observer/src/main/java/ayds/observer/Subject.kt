@@ -8,7 +8,7 @@ class Subject<T> : Observable<T>, Publisher<T> {
     
     private var value: T? = null
     
-    override fun subscribe(observer: Observer<T>) {
+    override fun subscribe(observer: (Any) -> Unit) {
         observers.add(observer)
     }
 
